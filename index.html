@@ -170,5 +170,335 @@
     { x: innerWidth*0.15, y: innerHeight*0.75, scale: 0.8, speed: 0.08 },
     { x: innerWidth*0.35, y: innerHeight*0.78, scale: 0.6, speed: 0.06 },
     { x: innerWidth*0.62, y: innerHeight*0.76, scale: 0.9, sp
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KINGDOMFREEDOM — Power in Liberty</title>
+  <meta name="description" content="KINGDOMFREEDOM — Power in Liberty. A cinematic landing page inspired by western sunsets." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap');
+
+    :root{
+      --accent:#ffcf6b;
+      --muted:#ffdcb3;
+      --overlay: rgba(4,2,1,0.45);
+    }
+
+    /* Reset */
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:'Cinzel',serif;color:#fff}
+
+    /* full-screen layout */
+    body{
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+      overflow-x:hidden;
+      background:linear-gradient(180deg,#2b0606 0%, #6b1f1f 45%, #eab47a 100%);
+    }
+
+    /* NAV */
+    nav{
+      position:fixed;
+      top:0;left:0;right:0;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 28px;
+      z-index:40;
+      background: linear-gradient(90deg, rgba(0,0,0,0.25), rgba(0,0,0,0.08));
+      backdrop-filter: blur(4px);
+    }
+    nav .brand { font-weight:700; color:var(--accent); letter-spacing:2px; }
+    nav ul { list-style:none; display:flex; gap:18px; margin:0; padding:0; align-items:center; }
+    nav ul li { cursor:pointer; color:var(--muted); transition:color .2s; }
+    nav ul li:hover{ color:#fff; }
+
+    /* canvas background sits behind everything */
+    #rdr-canvas{
+      position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none;
+      background: linear-gradient(180deg,#0b0f14 0%, #2b0707 60%, #fia 100%);
+    }
+
+    /* central hero content */
+    .hero{
+      position:relative;
+      z-index:10;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:120px 20px 80px;
+      text-align:center;
+      gap:20px;
+      flex-direction:column;
+    }
+
+    .poster-wrap{
+      width:min(760px,86%);
+      max-width:920px;
+      position:relative;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+      background:linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.35));
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .poster {
+      display:block;
+      width:100%;
+      height:auto;
+      transform:translateY(0);
+      transition:transform .6s ease;
+      mix-blend-mode: multiply;
+      /* ensure good contrast on mobile */
+      image-rendering: -webkit-optimize-contrast;
+    }
+    .poster-wrap:hover .poster { transform: translateY(-6px) scale(1.01); }
+
+    /* golden title overlay */
+    .overlay-title{
+      position:absolute;
+      left:0;right:0;bottom:18px;
+      padding:18px 26px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:6px;
+      backdrop-filter: blur(2px);
+    }
+    .title-main{
+      font-size:clamp(28px,4.5vw,52px);
+      color:var(--accent);
+      text-shadow: 0 6px 28px rgba(0,0,0,0.7);
+      margin:0;
+      letter-spacing:3px;
+    }
+    .title-sub{
+      margin:0;
+      color:var(--muted);
+      font-size:clamp(14px,1.6vw,18px);
+      letter-spacing:2px;
+    }
+
+    /* sections */
+    section{
+      padding:54px 20px;
+      background:linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.28));
+      z-index:12;
+    }
+    .container{max-width:1100px;margin:0 auto}
+
+    /* about/contact cards */
+    .card{
+      background: rgba(0,0,0,0.45);
+      border-radius:10px;
+      padding:18px;
+      color:#fff;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    /* responsiveness */
+    @media (max-width:700px){
+      nav{ padding:10px 14px; }
+      .poster-wrap{ width:92%; }
+    }
+
+    /* reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .poster { transition:none; transform:none !important; }
+      * { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="brand">KINGDOMFREEDOM</div>
+    <ul>
+      <li onclick="scrollToSection('home')">Home</li>
+      <li onclick="scrollToSection('about')">About</li>
+      <li onclick="scrollToSection('contact')">Contact</li>
+    </ul>
+  </nav>
+
+  <!-- canvas background (animated by JS) -->
+  <canvas id="rdr-canvas" aria-hidden="true"></canvas>
+
+  <!-- HERO -->
+  <main class="hero" id="home">
+    <div class="poster-wrap card" role="img" aria-label="Arthur Morgan poster">
+      <!-- IMPORTANT: Upload your image as 'arthur.png' in the repo root -->
+      <img class="poster" src="arthur.png" alt="Arthur Morgan poster (KINGDOMFREEDOM)" />
+      <div class="overlay-title">
+        <h1 class="title-main">KINGDOMFREEDOM</h1>
+        <p class="title-sub">Power in Liberty</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <div class="card">
+        <h2>About KINGDOMFREEDOM</h2>
+        <p>We craft cinematic digital experiences inspired by freedom, grit and frontier spirit. Design, branding, and web solutions with a western soul.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="card">
+        <h2>Contact</h2>
+        <p>For collaboration and inquiries: info@kingdomfreedom.com</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Canvas animation script (RDR2-style sunset + subtle parallax dust) -->
+  <script>
+  (function(){
+    const canvas = document.getElementById('rdr-canvas');
+    const ctx = canvas.getContext('2d');
+    let W = innerWidth, H = innerHeight;
+    const DPR = Math.max(1, window.devicePixelRatio || 1);
+
+    function resize(){
+      W = innerWidth; H = innerHeight;
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      canvas.width = Math.floor(W * DPR);
+      canvas.height = Math.floor(H * DPR);
+      ctx.setTransform(DPR,0,0,DPR,0,0);
+    }
+    addEventListener('resize', resize);
+    resize();
+
+    // particles (dust)
+    const particles = [];
+    const pCount = Math.max(60, Math.floor(W/6));
+    for(let i=0;i<pCount;i++){
+      particles.push({
+        x: Math.random()*W,
+        y: Math.random()*H,
+        r: 0.4 + Math.random()*1.6,
+        vx: (Math.random()-0.5)*0.25,
+        vy: -0.02 - Math.random()*0.3,
+        a: 0.02 + Math.random()*0.35
+      });
+    }
+
+    // clouds
+    const clouds = [];
+    for(let i=0;i<10;i++){
+      clouds.push({
+        x: Math.random()*W*1.5 - W*0.25,
+        y: Math.random()*H*0.45,
+        w: 120 + Math.random()*300,
+        h: 30 + Math.random()*40,
+        speed: 0.1 + Math.random()*0.6,
+        alpha: 0.06 + Math.random()*0.2
+      });
+    }
+
+    // mountains draw func (simple silhouette)
+    function drawMountains(){
+      const bases = [H*0.78, H*0.86];
+      const colors = ['rgba(20,10,10,0.95)','rgba(35,10,6,0.96)'];
+      for(let i=0;i<bases.length;i++){
+        ctx.fillStyle = colors[i];
+        ctx.beginPath();
+        ctx.moveTo(0,H);
+        const seg = 18;
+        for(let s=0;s<=seg;s++){
+          const t = s/seg;
+          const x = t*W;
+          const noise = Math.sin(t*6 + performance.now()*0.0001*(i+1)) * (60 + i*30);
+          const y = bases[i] - noise;
+          ctx.lineTo(x,y);
+        }
+        ctx.lineTo(W,H);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    // main loop
+    let last = performance.now();
+    function frame(now){
+      const dt = Math.min(40, now - last);
+      last = now;
+
+      // clear and subtle gradient sky
+      ctx.clearRect(0,0,W,H);
+      const g = ctx.createLinearGradient(0,0,0,H);
+      g.addColorStop(0,'#0b1220');
+      g.addColorStop(0.45,'#2b0707');
+      g.addColorStop(1,'#4b0f08');
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,W,H);
+
+      // sun glow (off-center low-right)
+      const sx = W*0.78, sy = H*0.7, sr = Math.min(W,H)*0.55;
+      const rg = ctx.createRadialGradient(sx,sy,10,sx,sy,sr);
+      rg.addColorStop(0,'rgba(255,140,30,0.12)');
+      rg.addColorStop(0.4,'rgba(255,120,40,0.06)');
+      rg.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle = rg;
+      ctx.fillRect(0,0,W,H);
+
+      // clouds
+      clouds.forEach(c=>{
+        c.x += c.speed * dt * 0.06;
+        if (c.x - c.w > W + 200) c.x = -c.w - 100;
+        ctx.beginPath();
+        ctx.ellipse(c.x, c.y, c.w*0.6, c.h, 0, 0, Math.PI*2);
+        ctx.ellipse(c.x + c.w*0.25, c.y - 8, c.w*0.45, c.h*0.8, 0, 0, Math.PI*2);
+        ctx.ellipse(c.x - c.w*0.2, c.y - 6, c.w*0.4, c.h*0.85, 0, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(255,255,255,${c.alpha})`;
+        ctx.fill();
+      });
+
+      // mountains
+      drawMountains();
+
+      // particles (dust)
+      particles.forEach(p=>{
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        if (p.y < -10) { p.y = H + 10; p.x = Math.random()*W; }
+        if (p.x < -20) p.x = W + 20;
+        if (p.x > W + 20) p.x = -20;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(194,154,89,${p.a})`;
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fill();
+      });
+
+      // vignette
+      const vg = ctx.createLinearGradient(0,0,0,H);
+      vg.addColorStop(0,'rgba(0,0,0,0.06)');
+      vg.addColorStop(0.6,'rgba(0,0,0,0)');
+      vg.addColorStop(1,'rgba(0,0,0,0.28)');
+      ctx.fillStyle = vg;
+      ctx.fillRect(0,0,W,H);
+
+      requestAnimationFrame(frame);
+    }
+
+    // respect reduced motion preference
+    if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      requestAnimationFrame(frame);
+    }
+
+    // utility: scroll to section
+    window.scrollToSection = function(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.scrollIntoView({behavior:'smooth'});
 </body>
 </html>

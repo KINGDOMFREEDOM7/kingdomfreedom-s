@@ -36,7 +36,103 @@
   <h1>KINGDOMFREEDOM</h1>
   <p>به دنیای آزادی دیجیتال خوش آمدید.  
   در KINGDOMFREEDOM ما مرزهای خلاقیت و فناوری را در هم می‌شکنیم تا آینده‌ای متفاوت بسازیم.</p>
-  
-  <footer>© 2025 KINGDOMFREEDOM — قدرت در آزادی</footer>
+ <footer>© 2025 KINGDOMFREEDOM — قدرت در آزادی</footer>
+eed: 0.04 }
+  ];
+
+  // animation loop
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min(40, now - last);
+    last = now;
+    // background base
+    // subtle vertical gradient (already set by CSS background, but draw gentle vignette)
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+
+    // sun glow
+    const gx = innerWidth * sun.xFactor;
+    const gy = innerHeight * sun.yFactor;
+    const grd = ctx.createRadialGradient(gx, gy, 10, gx, gy, sun.radius);
+    grd.addColorStop(0, 'rgba(255,140,30,0.10)');
+    grd.addColorStop(0.3, 'rgba(255,140,30,0.06)');
+    grd.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0,0,innerWidth,innerHeight);
+
+    // clouds
+    clouds.forEach(c=>{
+      c.x += c.speed * dt * 0.06;
+      if (c.x - c.w > innerWidth) c.x = -c.w - Math.random()*200;
+      // cloud shape
+      ctx.beginPath();
+      const cx = c.x, cy = c.y;
+      ctx.ellipse(cx, cy, c.w*0.6, c.h, 0, 0, Math.PI*2);
+      ctx.ellipse(cx + c.w*0.25, cy - 8, c.w*0.45, c.h*0.8, 0, 0, Math.PI*2);
+      ctx.ellipse(cx - c.w*0.2, cy - 6, c.w*0.4, c.h*0.85, 0, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,255,255,${c.alpha})`;
+      ctx.fill();
+    });
+
+    // mountains / hills layers (parallax)
+    const baseYs = [innerHeight*0.62, innerHeight*0.72, innerHeight*0.86];
+    layers.forEach((ly, i)=>{
+      const t = now * 0.0001;
+      const offset = t * ly.speed * 40;
+      // create temporary canvas transform for parallax move
+      ctx.save();
+      const dx = (Math.sin(now * 0.0002 * (i+1)) * 30) * ly.z;
+      ctx.translate(-dx, 0);
+      drawMountain(baseYs[i], 120 * (1 - ly.z*0.6), ly.color, offset, ly.scale);
+      ctx.restore();
+    });
+
+    // horses silhouette moving slowly (parallax)
+    horses.forEach(h=>{
+      h.x += h.speed * dt * 0.06;
+      if (h.x > innerWidth + 60) h.x = -80;
+      drawHorse(h.x, h.y, h.scale, 'rgba(5,5,5,0.95)');
+    });
+
+    // foreground dust particles
+    particles.forEach(p=>{
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      // wrap around
+      if (p.y < -10) { p.y = innerHeight + 10; p.x = Math.random()*innerWidth; }
+      if (p.x < -10) p.x = innerWidth + 10;
+      if (p.x > innerWidth + 10) p.x = -10;
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(194,154,89,${p.alpha})`; // sandy warm dust
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+
+    // subtle vignette
+    const vg = ctx.createLinearGradient(0, 0, 0, innerHeight);
+    vg.addColorStop(0, 'rgba(0,0,0,0.06)');
+    vg.addColorStop(0.5, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(0,0,0,0.22)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(0,0,innerWidth,innerHeight);
+
+    // loop
+    requestAnimationFrame(frame);
+  }
+
+  // start or reduce on mobile
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // don't animate
+  } else {
+    requestAnimationFrame(frame);
+  }
+
+  // expose a simple toggle (optional) for debugging via console:
+  window.__RDR2_BG = {
+    pause: ()=>{ cancelAnimationFrame(frame); },
+  };
+
+})();
+</script>
+<!-- === end RDR2-style animated background === -->
 </body>
 </html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KINGDOMFREEDOM — Light Mode</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: 'Cinzel', serif;
+      background: linear-gradient(180deg,#fff8ee 0%, #f7e2b3 60%, #f0c97a 100%);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      background: rgba(255,255,255,0.5);
+      padding: 10px;
+    }
+    nav a {
+      color: #444;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover { color: #000; }
+    h1 {
+      color: #a56a00;
+      margin: 20px 0 0;
+    }
+    p {
+      color: #774400;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+    <a href="light.html">Light Mode</a>
+  </nav>
+  <div>
+    <h1>KINGDOMFREEDOM</h1>
+    <p>Power in Liberty</p>
+  </div>
+</body>
+</html>

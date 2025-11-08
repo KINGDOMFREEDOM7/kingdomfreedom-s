@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KINGDOMFREEDOM — Power in Liberty</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      color: #fff;
+      font-family: 'Cinzel', serif;
+      background: linear-gradient(180deg,#2b0606 0%, #6b1f1f 45%, #eab47a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      background: rgba(0,0,0,0.4);
+      padding: 10px;
+    }
+    nav a {
+      color: #ffdcb3;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover { color: #fff; }
+    img {
+      width: 50%;
+      max-width: 500px;
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.6);
+    }
+    h1 { color: #ffcf6b; margin: 20px 0 0; }
+    p { color: #ffdcb3; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+    <a href="light.html">Light Mode</a>
+  </nav>
+  <div>
+    <img src="arthur.png" alt="Arthur Morgan">
+    <h1>KINGDOMFREEDOM</h1>
+    <p>Power in Liberty</p>
+  </div>
+</body>
+</html>
